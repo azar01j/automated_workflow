@@ -1,0 +1,28 @@
+name: Continuous Deployment Of Docker Image to Snowpark Container Services
+
+on: [push]  
+
+# Set Environmental Variables
+env:
+  DOCKER_USER: ${{secrets.DOCKER_USER}}
+  DOCKER_PASSWORD: ${{secrets.DOCKER_PASSWORD}}
+  DOCKER_LOGIN_NAME: ${{secrets.DOCKER_LOGIN_NAME}}
+  SNOWFLAKE_CONNECTIONS_DUMMY_ACCOUNT: ${{secrets.spc_account}}
+  SNOWFLAKE_CONNECTIONS_DUMMY_USER: ${{secrets.spc_USER}}
+  SNOWFLAKE_CONNECTIONS_DUMMY_PASSWORD: ${{secrets.spc_PASSWORD}}
+
+   
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name : Docker Login
+      run: docker login -u $DOCKER_USER -p $DOCKER_PASSWORD
+    - name: Run a command 
+      run: echo "User=$DOCKER_USER"
+    - name: Docker build image
+      run: docker build --rm --platform linux/amd64 -t dbt_invoice_app  -f ./Dockerfile .
+    - name: list images
+      run: docker images
